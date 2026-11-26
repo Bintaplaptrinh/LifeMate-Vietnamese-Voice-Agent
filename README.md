@@ -57,4 +57,4 @@ python -m unittest discover -s tests -v
 
 ## License
 
-The LifeMate source code has no separate license at this time. The GipFormer checkpoint retains the upstream MIT license from G-Group AI Lab, and the Qwen checkpoint retains the upstream Apache-2.0 license from Qwen.
+The LifeMate source code in this repository is licensed under the Apache License 2.0; see [LICENSE](LICENSE). The GipFormer checkpoint retains the upstream MIT license from G-Group AI Lab, and the Qwen checkpoint retains the upstream Apache-2.0 license from Qwen. Those model licenses remain separate from the source code license.
