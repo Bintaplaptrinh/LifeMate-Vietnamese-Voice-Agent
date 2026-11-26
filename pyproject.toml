@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lifemate-voice-agent"
+version = "0.1.0"
+description = "Vietnamese voice agent with ASR, retrieval and guarded tool calling"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["scikit-learn>=1.4,<2", "tqdm>=4.66,<5"]
+
+[project.optional-dependencies]
+test = ["numpy>=1.26,<3", "torch>=2.5,<3"]
+inference = [
+    "httpx>=0.28,<1",
+    "huggingface-hub>=0.30,<2",
+    "openai>=2.6,<3",
+    "sglang==0.5.10; platform_system == 'Linux'",
+    "sherpa-onnx==2.0.1",
+    "soundfile==0.13.1",
+]
+
+[project.scripts]
+lifemate = "lifemate.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["lifemate*"]
+namespaces = true
