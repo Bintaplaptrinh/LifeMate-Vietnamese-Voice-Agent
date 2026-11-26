@@ -1,10 +1,10 @@
 # LifeMate - Vietnamese Voice Agent
 
-LifeMate là trợ lý giọng nói tiếng Việt được phát triển cho Zalo AI Challenge 2026. Pipeline nhận dạng audio bằng GipFormer 1.5 INT8, truy xuất ví dụ để tạo prompt cho Qwen3.5 LifeMate và dùng Guard V3 để kiểm tra đối số trước khi gọi công cụ trong ToolEnv. Qwen có thể tra cứu để giải quyết tham chiếu và hỏi lại khi thiếu thông tin.
+LifeMate is a Vietnamese voice agent developed for Zalo AI Challenge 2026. GipFormer 1.5 transcribes audio, and Qwen3.5 LifeMate uses retrieved examples to decide which tools to call. Guard V3 validates arguments before the agent invokes a tool in ToolEnv. The agent can look up references and ask for clarification when information is missing.
 
-## Kết quả public test
+## Public Test Results
 
-| Phiên bản theo thứ tự từ cũ đến mới | Điểm |
+| Experiment (oldest to newest) | Score |
 | --- | ---: |
 | 1 | 3.15000 |
 | 2 | 7.70000 |
@@ -13,20 +13,20 @@ LifeMate là trợ lý giọng nói tiếng Việt được phát triển cho Za
 | 5 | 32.35000 |
 | 6 | 38.25000 |
 | 7 | 47.18000 |
-| Bản cập nhật v4 mới nhất | **49.18000** |
+| Latest v4 update | **49.18000** |
 
-Điểm là kết quả của toàn pipeline trên public test. Các số thứ tự trong bảng biểu thị thứ tự thử nghiệm.
+Each score reflects the full pipeline on the public test set.
 
-## Checkpoint v4
+## v4 Models
 
-| Model | Inference |
+| Model | Role |
 | --- | --- |
-| [GipFormer 1.5 LifeMate v4](https://huggingface.co/TuanPhat/GipFormer-1.5-LifeMate-v4/tree/2570e079084df37cb152095e010f71f7d1bfc779) | ASR trên CPU qua sherpa-onnx. Hub cung cấp checkpoint raw-2000 ở dạng SafeTensors và bộ ONNX INT8 dùng khi chấm. |
-| [Qwen3.5 LifeMate v4](https://huggingface.co/TuanPhat/Qwen3.5-LifeMate-v4/tree/cc4b5f58d5f771ad86ddbea114066e41bc4b97a4) | QwenTune dựa trên Qwen3.5-4B, checkpoint đã merge ở dạng SafeTensors, chạy bằng SGLang. |
+| [GipFormer 1.5 LifeMate v4](https://huggingface.co/TuanPhat/GipFormer-1.5-LifeMate-v4) | Fine-tuned from GipFormer 1.5 for Vietnamese speech recognition. |
+| [Qwen3.5 LifeMate v4](https://huggingface.co/TuanPhat/Qwen3.5-LifeMate-v4) | Fine-tuned from Qwen3.5-4B for tool calling in LifeMate. |
 
-## Chạy pipeline
+## Run the Pipeline
 
-Dùng Python 3.12 trên Linux x86-64, GPU NVIDIA và CUDA toolkit tương thích với SGLang/PyTorch. Nếu CUDA cài ở đường dẫn riêng, đặt `CUDA_HOME` và thêm `$CUDA_HOME/bin` vào `PATH`.
+Use Python 3.12 on Linux x86-64 with an NVIDIA GPU and a CUDA toolkit compatible with SGLang and PyTorch. If CUDA is installed in a custom location, set `CUDA_HOME` and add `$CUDA_HOME/bin` to `PATH`.
 
 ~~~bash
 python -m venv .venv
@@ -35,7 +35,7 @@ python -m pip install -e '.[inference]'
 python -m lifemate --help
 ~~~
 
-Chuẩn bị bộ dữ liệu chính thức. `--root` là thư mục cha của `public_test/` hoặc `private_test/`. Thư mục split chứa JSONL, catalog, audio và package `zaic_tools` của ban tổ chức. `--train-root` trỏ vào thư mục có `train.jsonl` và `train_tools_catalog.json` để chạy retrieval và Guard V3.
+Use the official challenge dataset. Pass the parent directory of `public_test/` or `private_test/` to `--root`. Each split contains JSONL records, the tool catalog, audio files, and the organizers' `zaic_tools` package. Point `--train-root` to the directory containing `train.jsonl` and `train_tools_catalog.json` for retrieval and Guard V3.
 
 ~~~bash
 python -m lifemate \
@@ -46,15 +46,15 @@ python -m lifemate \
   --limit 3
 ~~~
 
-Lần chạy đầu tải hai checkpoint Hugging Face theo revision v4 đã ghim trong mã. Để chạy offline, truyền `--asr /path/to/gipformer` và `--model /path/to/qwentune`. Dùng `--asr-revision` và `--model-revision` để chọn revision cụ thể khi tải từ Hub. Mỗi dòng JSONL đầu ra có `id`, `tool_calls`, `state_hash` và `time` (mili giây).
+The first run downloads the two checkpoints from the Hugging Face revisions pinned in the code. To run offline, pass `--asr /path/to/gipformer` and `--model /path/to/qwen`. To select other Hub revisions, use `--asr-revision` and `--model-revision`. Each output JSONL record contains `id`, `tool_calls`, `state_hash`, and `time` in milliseconds.
 
-## Kiểm thử
+## Run the Tests
 
 ~~~bash
 python -m pip install -e '.[test]'
 python -m unittest discover -s tests -v
 ~~~
 
-## Giấy phép
+## License
 
-Phần mã LifeMate do nhóm viết hiện chưa được cấp giấy phép riêng. Checkpoint GipFormer kế thừa MIT từ G-Group AI Lab và checkpoint Qwen kế thừa Apache-2.0 từ Qwen.
+The LifeMate source code has no separate license at this time. The GipFormer checkpoint retains the upstream MIT license from G-Group AI Lab, and the Qwen checkpoint retains the upstream Apache-2.0 license from Qwen.
